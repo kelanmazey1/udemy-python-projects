@@ -1,1 +1,1 @@
-Repo for projects assigned in [this](https://www.udemy.com/course/complete-python-bootcamp/) course 
+Repo for projects assigned in [this](https://www.udemy.com/course/complete-python-bootcamp/) course
