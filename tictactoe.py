@@ -25,10 +25,10 @@ def get_character_choice():
 
   if choice == 'X':
     print("Player 1 chose 'X' they will go first\n")
-    return { "Player 1": 'X', "Player 2": 'O' }
+    return { 'X': "Player 1", 'O': "Player 2" }
   else:
     print("Player 1 chose 'O', Player 2 will go first\n")
-    return { "Player 1": 'O', "Player 2": 'X' }
+    return { 'O': "Player 1", 'X': "Player 2" }
 
 # Get users position choice
 def get_position_choice(board_values):
@@ -60,7 +60,6 @@ def get_position_choice(board_values):
       if board_values[row][col] == '-':
         valid_position = True
         # Return index position to be used for board updating
-        print(type((row, col)))
         return (row, col)
       else:
         print("Oops that space is already taken!")
@@ -73,15 +72,47 @@ def update_board(position, player_character, board_values):
   board_values[position[0]][position[1]] = player_character
   return board_values
 
+def reset_board(board_values):
+  for i, row in enumerate(board_values):
+      for j, item in enumerate(row):
+        board_values[i][j] = '-'
+  
+  return board_values
+
 # Check if game is won 
-def game_over():
-  pass
+def game_over(board_values, move_count):
+    result = ''
+    if move_count == 8:
+      result = 'Draw'
+    
+    # Loop over board to check if it matches, only need to add if for index 1 as that must be filled in for possible winner
+    for i, row in enumerate(board_values):
+      for j, item in enumerate(row):
+        if i == 1:
+          if board_values[i - 1][j] == board_values[i + 1][j] == board_values[i][j] != '-':
+            result = 'Win'
+        if j == 1:
+          if board_values[i][j - 1] == board_values[i][j + 1] == board_values[i][j] != '-':
+            result = 'Win'
+    
+    # Check for only 2 possible diagonal solutions
+    if board_values[0][0] == board_values[1][1] == board_values[2][2] != '-' or board_values[2][0] == board_values[1][1] == board_values[0][2] != '-':
+      result = 'Win'
+
+    return result
 
 # Decide whether to play again
 def play_again():
-  pass
+  choice = ''
+  while choice not in ['Y', 'N']:
+    choice = input("Would you like to play again 'Y' Yes or 'N' No: ")
+
+  return choice == 'Y'
 
 # Main game loop
+
+# Used to measure game length
+move_count = 0
 
 # Create initial 2D list of values for the board
 board_values = []
@@ -90,36 +121,46 @@ for i in range(0, 3):
 
 game_playing = True
 
-# Assume player 1 will play first
-current_player = 'Player 1'
+# X will always go first
+current_player = 'X'
 
 # Choose character X or O, swap current player if needed
 player_characters = get_character_choice()
-if player_characters['Player 1'] == 'O':
-  current_player = 'Player 2'
 
 while game_playing:
   # Gather choice, display updated board
   position = get_position_choice(board_values)
-  display_board(board_values)
-  update_board(position, player_characters[current_player], board_values)
+  update_board(position, current_player, board_values)
   display_board(board_values)
   
   # Check if game over
-  if game_over():
+  result = game_over(board_values, move_count)
+  if result in ['Win', 'Draw']:
     game_playing = False
+    if result == 'Draw':
+      print("This game was draw...")
+    else:
+      print(f"{player_characters[current_player]} IS THE WINNER")
     
-  # Check if want to play agian
+    # Check if want to play agian
     if play_again():
+      # Reset player, board and playing boolean
+      board_values = reset_board(board_values)
+      player_characters = get_character_choice()
+      current_player = 'X'
       game_playing = True
     else:
       break
-  
-  # Switch player
-  if current_player == 'Player 1':
-    current_player = 'Player 2'
-  elif current_player == 'Player 2':
-    current_player = 'Player 1'
+    
+  else:
+      # Switch player
+    if current_player == 'X':
+      current_player = 'O'
+    elif current_player == 'O':
+      current_player = 'X'
+
+    move_count += 1
+
 
 
 
