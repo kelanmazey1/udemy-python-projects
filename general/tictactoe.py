@@ -149,6 +149,7 @@ while game_playing:
       player_characters = get_character_choice()
       current_player = 'X'
       game_playing = True
+      move_count = 0
     else:
       break
     
